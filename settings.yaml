@@ -1,0 +1,7 @@
+default:
+  BASE_DIR: /root/.ara/server
+  SECRET_KEY: toto
+  LOG_LEVEL: DEBUG
+  WRITE_LOGIN_REQUIRED: false
+  READ_LOGIN_REQUIRED: false
+  DEBUG: true

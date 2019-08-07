@@ -1,0 +1,21 @@
+FROM alpine:3.9.4 as build
+
+ENV API_URL localhost
+ENV API_PORT 8000
+
+RUN set -euxo pipefail ;\
+    apk update --no-cache && apk upgrade --no-cache ;\
+    apk add --no-cache --update npm nodejs git ;\
+    git clone "https://opendev.org/recordsansible/ara-web" /ara-web ;\
+    cd /ara-web ;\
+    npm install ;\
+    npm run-script build;
+
+FROM nginx:1.16-alpine
+
+COPY --from=build /ara-web/build /usr/share/nginx/html
+
+COPY launch.sh .
+RUN chmod 700 launch.sh
+
+CMD ["./launch.sh"]

@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:10
+    environment:
+      POSTGRES_DB: ara
+      POSTGRES_USER: ara
+      POSTGRES_PASSWORD: ara
+      PGDATA: /data/postgres
+    ports:
+      - 5432:5432
+  ara-api:
+    build:
+      context: .
+      dockerfile: DockerfileApi
+    depends_on:
+      - db
+    environment:
+      ARA_DATABASE_CONN_MAX_AGE: 5
+      ARA_DATABASE_ENGINE: django.db.backends.postgresql
+      ARA_DATABASE_NAME: ara
+      ARA_DATABASE_USER: ara
+      ARA_DATABASE_PASSWORD: ara
+      ARA_DATABASE_HOST: db
+      ARA_DATABASE_PORT: 5432
+      ARA_ALLOWED_HOSTS: "['127.0.0.1', 'localhost', '::1', 'ara-api', 'ara-web']"
+      ARA_CORS_ORIGIN_WHITELIST: "['http://127:0.0.1:8000', 'http://localhost:8000', 'http://ara-api:8000', 'http://localhost:9007']"
+    ports:
+      - 9006:8000
+  ara-web:
+    build:
+      context: .
+      dockerfile: DockerfileWeb
+    depends_on:
+      - ara-api
+    environment:
+      API_URL: localhost
+      API_PORT: 9006
+    ports:
+      - 9007:80
+
+
